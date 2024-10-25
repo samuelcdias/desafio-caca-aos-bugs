@@ -20,7 +20,7 @@ public class AccountHandler(IHttpClientFactory httpClientFactory) : IAccountHand
 
     public async Task<Response<string>> RegisterAsync(RegisterRequest request)
     {
-        var result = await _client.PostAsJsonAsync("v1/identity/register", request);
+        var result = await _client.PostAsJsonAsync("v1/identity/register?useCookies=true", request);
         return result.IsSuccessStatusCode
             ? new Response<string>("Cadastro realizado com sucesso!", 201, "Cadastro realizado com sucesso!")
             : new Response<string>(null, 400, "Não foi possível realizar o seu cadastro");
