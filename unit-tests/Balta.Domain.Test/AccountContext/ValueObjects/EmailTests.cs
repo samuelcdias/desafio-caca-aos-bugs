@@ -86,10 +86,8 @@ public class EmailTests
     {
         var dateTimeProviderMock = new Mock<IDateTimeProvider>();
 
-        // Act
         var email = Email.FromString(ExpectedAddress, dateTimeProviderMock.Object);
-
-        // Assert
+        
         Assert.Equal(ExpectedAddress, email.Address);
     }
 
