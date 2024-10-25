@@ -29,6 +29,9 @@ public partial record Email : ValueObject
 
     public static Email ShouldCreate(string address, IDateTimeProvider dateTimeProvider)
     {
+        if (string.IsNullOrEmpty(address))
+            throw new ArgumentNullException(address, "Email address cannot be null or empty");
+        
         address = address.Trim();
         address = address.ToLower();
 
@@ -38,6 +41,11 @@ public partial record Email : ValueObject
         var verificationCode = VerificationCode.ShouldCreate(dateTimeProvider);
 
         return new Email(address, address.ToBase64(), verificationCode);
+    }
+    
+    public static Email FromString(string address, IDateTimeProvider dateTimeProvider)
+    {
+        return Email.ShouldCreate(address, dateTimeProvider);
     }
 
     #endregion
