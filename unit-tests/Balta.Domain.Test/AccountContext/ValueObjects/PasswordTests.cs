@@ -1,12 +1,26 @@
+using Balta.Domain.AccountContext.ValueObjects;
+using Balta.Domain.AccountContext.ValueObjects.Exceptions;
+using Balta.Domain.SharedContext.Abstractions;
+using Balta.Domain.SharedContext.Extensions;
+
 namespace Balta.Domain.Test.AccountContext.ValueObjects;
 
 public class PasswordTests
 {
     [Fact]
-    public void ShouldFailIfPasswordIsNull() => Assert.Fail();
+    public void ShouldFailIfPasswordIsNull(){
+        Assert.Throws<InvalidPasswordException>(()=> {
+            Password.ShouldCreate(null);
+        });
+    }
     
     [Fact]
-    public void ShouldFailIfPasswordIsEmpty() => Assert.Fail();
+    public void ShouldFailIfPasswordIsEmpty(){
+        Assert.Throws<InvalidPasswordException>(()=> {
+            Password.ShouldCreate(string.Empty);
+        });
+
+    }
     
     [Fact]
     public void ShouldFailIfPasswordIsWhiteSpace() => Assert.Fail();
