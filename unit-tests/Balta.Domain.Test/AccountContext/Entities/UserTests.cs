@@ -11,13 +11,12 @@ public class UserTests
 {
     private const string EmailAddress = "test@test.com"; 
     private const string PlainTextPassword = "senhabemlouca123";
+    private readonly Mock<IDateTimeProvider> _dateTimeProvider = new();
     
     [Fact]
     public void ShouldCreateUserIfEmailAndPasswordIsValid()
     {
-        var dateTimeProvider = new Mock<IDateTimeProvider>();
-        
-        var email = Email.ShouldCreate(EmailAddress, dateTimeProvider.Object);
+        var email = Email.ShouldCreate(EmailAddress, _dateTimeProvider.Object);
         var password = Password.ShouldCreate(PlainTextPassword);
         var user = User.ShouldCreate(email, password);
         
@@ -31,9 +30,8 @@ public class UserTests
     [Fact]
     public void ShouldIncrementAccessFailedCountIfAuthFails()
     {
-        var dateTimeProvider = new Mock<IDateTimeProvider>();
         
-        var email = Email.ShouldCreate(EmailAddress, dateTimeProvider.Object);
+        var email = Email.ShouldCreate(EmailAddress, _dateTimeProvider.Object);
         var password = Password.ShouldCreate(PlainTextPassword);
         var user = User.ShouldCreate(email, password);
         
@@ -45,9 +43,7 @@ public class UserTests
     [Fact]
     public void ShouldBLockUserIfMultipleFailAttempts()
     {
-        var dateTimeProvider = new Mock<IDateTimeProvider>();
-        
-        var email = Email.ShouldCreate(EmailAddress, dateTimeProvider.Object);
+        var email = Email.ShouldCreate(EmailAddress, _dateTimeProvider.Object);
         var password = Password.ShouldCreate(PlainTextPassword);
         var user = User.ShouldCreate(email, password);
         
@@ -62,9 +58,7 @@ public class UserTests
     [Fact]
     public void ShouldSendBlockingMessageIfMultipleFailAttempts()
     {
-        var dateTimeProvider = new Mock<IDateTimeProvider>();
-        
-        var email = Email.ShouldCreate(EmailAddress, dateTimeProvider.Object);
+        var email = Email.ShouldCreate(EmailAddress, _dateTimeProvider.Object);
         var password = Password.ShouldCreate(PlainTextPassword);
         var user = User.ShouldCreate(email, password);
         
@@ -79,9 +73,7 @@ public class UserTests
     [Fact]
     public void ShouldNotIncrementAccessFailedCountAfterBlock()
     {
-        var dateTimeProvider = new Mock<IDateTimeProvider>();
-        
-        var email = Email.ShouldCreate(EmailAddress, dateTimeProvider.Object);
+        var email = Email.ShouldCreate(EmailAddress, _dateTimeProvider.Object);
         var password = Password.ShouldCreate(PlainTextPassword);
         var user = User.ShouldCreate(email, password);
         

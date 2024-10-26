@@ -25,7 +25,7 @@
       <ProjectReference Include="..\Balta.Domain\Balta.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
+    <!-- <ItemGroup>
       <Compile Remove="AccountContext\Entities\User.cs\**" />
     </ItemGroup>
 
@@ -35,6 +35,6 @@
 
     <ItemGroup>
       <None Remove="AccountContext\Entities\User.cs\**" />
-    </ItemGroup>
+    </ItemGroup> -->
 
 </Project>
