@@ -71,19 +71,19 @@ public class PasswordTests
     
     [Fact]
     public void ShouldImplicitConvertToString() => Assert.Fail();
-    
+
     [Fact]
     public void ShouldReturnHashAsStringWhenCallToStringMethod() => Assert.Fail();
-    
+
     [Fact]
     public void ShouldMarkPasswordAsExpired() => Assert.Fail();
-    
+
     [Fact]
     public void ShouldFailIfPasswordIsExpired() => Assert.Fail();
-    
+
     [Fact]
     public void ShouldMarkPasswordAsMustChange() => Assert.Fail();
-    
+
     [Fact]
     public void ShouldFailIfPasswordIsMarkedAsMustChange() => Assert.Fail();
 }
