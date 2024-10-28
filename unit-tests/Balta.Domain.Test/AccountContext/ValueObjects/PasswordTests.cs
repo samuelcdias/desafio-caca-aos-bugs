@@ -23,22 +23,51 @@ public class PasswordTests
     }
     
     [Fact]
-    public void ShouldFailIfPasswordIsWhiteSpace() => Assert.Fail();
+    public void ShouldFailIfPasswordIsWhiteSpace(){
+        Assert.Throws<InvalidPasswordException>(()=> {
+            Password.ShouldCreate("     ");    
+        });
+    }
     
     [Fact]
-    public void ShouldFailIfPasswordLenIsLessThanMinimumChars() => Assert.Fail();
+    public void ShouldFailIfPasswordLenIsLessThanMinimumChars(){
+        string password = "senha";
+        Assert.Throws<InvalidPasswordException>(()=> {
+            Password.ShouldCreate(password);
+        });
+    }
     
     [Fact]
-    public void ShouldFailIfPasswordLenIsGreaterThanMaxChars() => Assert.Fail();
+    public void ShouldFailIfPasswordLenIsGreaterThanMaxChars() {
+        string password = "aBcD1fGhIjKl2MnOpQrSt3UvWxYz4AbCdEfGhIjKl5MnOpQrS";
+        Assert.Throws<InvalidPasswordException>(()=>{
+            Password.ShouldCreate(password);
+        });
+    }
+
+    [Fact]
+    public void ShouldHashPassword(){
+
+        var plainTextPassword = "Password123!";
+        var passwords = Password.ShouldCreate(plainTextPassword);
+        Assert.True(Password.ShouldMatch(passwords.Hash, plainTextPassword));
+
+    }
     
     [Fact]
-    public void ShouldHashPassword() => Assert.Fail();
+    public void ShouldVerifyPasswordHash(){
+    
+        string passwordText = "passwordDeTeste";
+        Password password = Password.ShouldCreate(passwordText);
+
+        bool isMatch = Password.ShouldMatch(password.Hash, passwordText);
+
+        Assert.True(isMatch, "senhas diferentes");
+
+    }
     
     [Fact]
-    public void ShouldVerifyPasswordHash() => Assert.Fail();
-    
-    [Fact]
-    public void ShouldGenerateStrongPassword() => Assert.Fail();
+    public void ShouldGenerateStrongPassword()  => Assert.Fail();
     
     [Fact]
     public void ShouldImplicitConvertToString() => Assert.Fail();
