@@ -66,8 +66,46 @@ public class PasswordTests
 
     }
     
-    [Fact]
-    public void ShouldGenerateStrongPassword()  => Assert.Fail();
+    [Theory]
+    [InlineData(true,true)]
+    [InlineData(true,false)]
+    [InlineData(false,true)]
+    [InlineData(false,false)]
+    public void ShouldGenerateStrongPassword(bool includeSpecialChars, bool upperCase){
+    
+        var passwordGenerated = Password.ShouldGenerate(16,includeSpecialChars,upperCase);
+        const string smallLetters = "abcdefghijklmnopqrstuvwxyz";
+        const string bigLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const string numbers = "1234567890";
+        const string special = "!@#$%ˆ&*(){}[];";
+
+        Assert.Equal(16,passwordGenerated.Length);
+        Assert.Contains(passwordGenerated, p => numbers.Contains(p));
+        Assert.Contains(passwordGenerated, p => smallLetters.Contains(p));
+
+        if(upperCase){
+            Assert.Contains(passwordGenerated, p => bigLetters.Contains(p));
+        }else{
+            Assert.DoesNotContain(passwordGenerated, p => bigLetters.Contains(p));
+        }
+
+        if(includeSpecialChars){
+            Assert.Contains(passwordGenerated, p => special.Contains(p));
+        }else{
+            Assert.DoesNotContain(passwordGenerated, p => special.Contains(p));
+        }
+    }
+
+    [Theory]
+    [InlineData(true,true)]
+    [InlineData(true,false)]
+    [InlineData(false,true)]
+    [InlineData(false,false)]
+    public void ShouldFailIfNonMinimalLengthIsProvided(bool includeSpecialChars, bool upperCase){
+        Assert.Throws<InvalidDataException>(()=> {
+            Password.ShouldGenerate(7,includeSpecialChars,upperCase);    
+        });
+    }
     
     [Fact]
     public void ShouldImplicitConvertToString() => Assert.Fail();
