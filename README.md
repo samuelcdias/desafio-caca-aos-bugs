@@ -22,13 +22,13 @@ Bernardo Meine [github](https://github.com/BernardoMeine)
 
 Edinaelson Santos [github](https://github.com/samuelcdias)
 
-![Samuel Cardoso](https://avatars.githubusercontent.com/u/41789017?v=4 "Samuel Cardoso")
-
-Samuel Cardoso [github](https://github.com/samuelcdias)
-
 ![Hélio Neto](https://avatars.githubusercontent.com/u/41789017?v=4 "Hélio Neto")
 
 Hélio Neto [github](https://github.com/ehlliot8)
+
+![Samuel Cardoso](https://avatars.githubusercontent.com/u/41789017?v=4 "Samuel Cardoso")
+
+Samuel Cardoso [github](https://github.com/samuelcdias)
 
 ## ⚙️ Tecnologias
 * C# 12
