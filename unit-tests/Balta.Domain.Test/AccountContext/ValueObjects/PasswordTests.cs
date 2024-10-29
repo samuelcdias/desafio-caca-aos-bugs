@@ -108,20 +108,56 @@ public class PasswordTests
     }
     
     [Fact]
-    public void ShouldImplicitConvertToString() => Assert.Fail();
+    public void ShouldImplicitConvertToString()
+    {
+        var passwordAssigned = Password.ShouldCreate("password");
+
+        Assert.IsType<Password>(passwordAssigned);
+        Assert.Equal(passwordAssigned.ToString(), passwordAssigned);
+    }
 
     [Fact]
-    public void ShouldReturnHashAsStringWhenCallToStringMethod() => Assert.Fail();
+    public void ShouldReturnHashAsStringWhenCallToStringMethod()
+    {
+        var passwordAssigned = Password.ShouldCreate("password");
+
+        Assert.Equal(passwordAssigned.Hash, passwordAssigned.ToString());
+        Assert.IsType<string>(passwordAssigned.ToString());
+    }
 
     [Fact]
-    public void ShouldMarkPasswordAsExpired() => Assert.Fail();
+    public void ShouldMarkPasswordAsExpired()
+    {
+        var password = "HelloFriends";
+        var passwordCreated = Password.ShouldCreateWithExpiration(password, DateTime.UtcNow.AddDays(-1));
+        Assert.True(passwordCreated.IsExpired());
+    }
 
     [Fact]
-    public void ShouldFailIfPasswordIsExpired() => Assert.Fail();
+    public void ShouldFailIfPasswordIsExpired(){
+        var password = "HelloFriends";
+        var passwordCreated = Password.ShouldCreateWithExpiration(password, DateTime.UtcNow.AddDays(-1));
+        Assert.Throws<InvalidPasswordException>(()=> Password.ShouldVerify(passwordCreated));
+    }
 
     [Fact]
-    public void ShouldMarkPasswordAsMustChange() => Assert.Fail();
+    public void ShouldMarkPasswordAsMustChange(){
+        var plainTextPassword = "HelloFriends";
+        var passwordCreated = Password.ShouldCreate(plainTextPassword);
+
+        passwordCreated.MarkAsMustChange();
+
+        Assert.True(passwordCreated.MustChange);
+    }
 
     [Fact]
-    public void ShouldFailIfPasswordIsMarkedAsMustChange() => Assert.Fail();
+    public void ShouldFailIfPasswordIsMarkedAsMustChange(){
+        var plainTextPassword = "HelloFriends";
+        var passwordCreated = Password.ShouldCreate(plainTextPassword);
+        
+        passwordCreated.MarkAsMustChange();
+
+        Assert.Throws<InvalidPasswordException>(()=> Password.ShouldVerify(passwordCreated));
+
+    }
 }

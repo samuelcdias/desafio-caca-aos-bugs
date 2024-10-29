@@ -23,11 +23,24 @@ public record Password : ValueObject
         Hash = hash;
         ExpiresAtUtc = null;
         MustChange = false;
+        
     }
 
     #endregion
 
     #region Factories
+
+    public static Password ShouldVerify(Password password){
+        if(password.IsExpired()){
+            throw new InvalidPasswordException("Password is Expired");
+        }
+        
+        if(password.MustChange){
+            throw new InvalidPasswordException("Password Must change!");
+        }
+
+        return password;
+    }
 
     public static Password ShouldCreate(string plainText)
     {
@@ -48,17 +61,36 @@ public record Password : ValueObject
         return new Password(hash);
     }
 
+
+     private Password(string hash, DateTime? expiresAtUtc) : this(hash)
+    {
+        ExpiresAtUtc = expiresAtUtc;
+    }
+
+     public static Password ShouldCreateWithExpiration(string plainText, DateTime expirationDate)
+    {
+        var password = ShouldCreate(plainText);
+        return new Password(password.Hash, expirationDate);
+    }
+
     #endregion
 
     #region Properties
 
     public string Hash { get; }
     public DateTime? ExpiresAtUtc { get; }
-    public bool MustChange { get; }
+    public bool MustChange { get; set;}
+    public bool IsExpired() => ExpiresAtUtc.HasValue && ExpiresAtUtc.Value <= DateTime.UtcNow;
 
     #endregion
 
     #region Public Methods
+
+     public void MarkAsMustChange()
+    {
+        MustChange = true;
+    }
+
 
     /// <summary>
     /// Generate Ramdom Password
