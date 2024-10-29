@@ -10,7 +10,8 @@ public record Password : ValueObject
 
     private const int MinLength = 8;
     private const int MaxLength = 48;
-    private const string Valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    private const string Valid = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private const string Numbers = "1234567890";
     private const string Special = "!@#$%ˆ&*(){}[];";
 
     #endregion
@@ -59,16 +60,41 @@ public record Password : ValueObject
 
     #region Public Methods
 
+    /// <summary>
+    /// Generate Ramdom Password
+    /// </summary>
+    /// <param name="length">number of chars.</param>
+    /// <param name="includeSpecialChars">use true to enable special chars.</param>
+    /// <param name="upperCase">use true to enable uppercase chars. Otherwise, will use only lowercase.</param>
+    /// <returns>password generate.</returns>
+    /// <exception cref="InvalidDataException">lenth needs to be greather than MinLength setted in class.</exception>
     public static string ShouldGenerate(
         short length = 16,
         bool includeSpecialChars = true,
         bool upperCase = true)
     {
-        var chars = includeSpecialChars ? (Valid + Special) : Valid;
-        var startRandom = upperCase ? 26 : 0;
+        if(length < MinLength){
+            throw new InvalidDataException();
+        }
+        var chars = includeSpecialChars ? (Valid + Special + Numbers) : (Valid + Numbers);
+        var startRandom = upperCase ? 0 : 26;
         var index = 0;
         var res = new char[length];
         var rnd = new Random();
+
+        res[0] = chars[rnd.Next(chars.Length -10, chars.Length)];
+        index++;
+
+        res[index++] = chars[rnd.Next(26,26 * 2)]; 
+        index++;
+
+        if(includeSpecialChars){
+            res[index++] = chars[rnd.Next(Valid.Length,Valid.Length + Special.Length)]; 
+        } 
+        
+        if(upperCase){
+            res[index++] = chars[rnd.Next(0,26)]; 
+        }
 
         while (index < length)
             res[index++] = chars[rnd.Next(startRandom, chars.Length)];

@@ -1,33 +1,112 @@
 using Balta.Domain.AccountContext.ValueObjects;
+using Balta.Domain.AccountContext.ValueObjects.Exceptions;
+using Balta.Domain.SharedContext.Abstractions;
+using Balta.Domain.SharedContext.Extensions;
 
 namespace Balta.Domain.Test.AccountContext.ValueObjects;
 
 public class PasswordTests
 {
     [Fact]
-    public void ShouldFailIfPasswordIsNull() => Assert.Fail();
+    public void ShouldFailIfPasswordIsNull(){
+        Assert.Throws<InvalidPasswordException>(()=> {
+            Password.ShouldCreate(null);
+        });
+    }
+    
+    [Fact]
+    public void ShouldFailIfPasswordIsEmpty(){
+        Assert.Throws<InvalidPasswordException>(()=> {
+            Password.ShouldCreate(string.Empty);
+        });
+
+    }
+    
+    [Fact]
+    public void ShouldFailIfPasswordIsWhiteSpace(){
+        Assert.Throws<InvalidPasswordException>(()=> {
+            Password.ShouldCreate("     ");    
+        });
+    }
+    
+    [Fact]
+    public void ShouldFailIfPasswordLenIsLessThanMinimumChars(){
+        string password = "senha";
+        Assert.Throws<InvalidPasswordException>(()=> {
+            Password.ShouldCreate(password);
+        });
+    }
+    
+    [Fact]
+    public void ShouldFailIfPasswordLenIsGreaterThanMaxChars() {
+        string password = "aBcD1fGhIjKl2MnOpQrSt3UvWxYz4AbCdEfGhIjKl5MnOpQrS";
+        Assert.Throws<InvalidPasswordException>(()=>{
+            Password.ShouldCreate(password);
+        });
+    }
 
     [Fact]
-    public void ShouldFailIfPasswordIsEmpty() => Assert.Fail();
+    public void ShouldHashPassword(){
 
+        var plainTextPassword = "Password123!";
+        var passwords = Password.ShouldCreate(plainTextPassword);
+        Assert.True(Password.ShouldMatch(passwords.Hash, plainTextPassword));
+
+    }
+    
     [Fact]
-    public void ShouldFailIfPasswordIsWhiteSpace() => Assert.Fail();
+    public void ShouldVerifyPasswordHash(){
+    
+        string passwordText = "passwordDeTeste";
+        Password password = Password.ShouldCreate(passwordText);
 
-    [Fact]
-    public void ShouldFailIfPasswordLenIsLessThanMinimumChars() => Assert.Fail();
+        bool isMatch = Password.ShouldMatch(password.Hash, passwordText);
 
-    [Fact]
-    public void ShouldFailIfPasswordLenIsGreaterThanMaxChars() => Assert.Fail();
+        Assert.True(isMatch, "senhas diferentes");
 
-    [Fact]
-    public void ShouldHashPassword() => Assert.Fail();
+    }
+    
+    [Theory]
+    [InlineData(true,true)]
+    [InlineData(true,false)]
+    [InlineData(false,true)]
+    [InlineData(false,false)]
+    public void ShouldGenerateStrongPassword(bool includeSpecialChars, bool upperCase){
+    
+        var passwordGenerated = Password.ShouldGenerate(16,includeSpecialChars,upperCase);
+        const string smallLetters = "abcdefghijklmnopqrstuvwxyz";
+        const string bigLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const string numbers = "1234567890";
+        const string special = "!@#$%ˆ&*(){}[];";
 
-    [Fact]
-    public void ShouldVerifyPasswordHash() => Assert.Fail();
+        Assert.Equal(16,passwordGenerated.Length);
+        Assert.Contains(passwordGenerated, p => numbers.Contains(p));
+        Assert.Contains(passwordGenerated, p => smallLetters.Contains(p));
 
-    [Fact]
-    public void ShouldGenerateStrongPassword() => Assert.Fail();
+        if(upperCase){
+            Assert.Contains(passwordGenerated, p => bigLetters.Contains(p));
+        }else{
+            Assert.DoesNotContain(passwordGenerated, p => bigLetters.Contains(p));
+        }
 
+        if(includeSpecialChars){
+            Assert.Contains(passwordGenerated, p => special.Contains(p));
+        }else{
+            Assert.DoesNotContain(passwordGenerated, p => special.Contains(p));
+        }
+    }
+
+    [Theory]
+    [InlineData(true,true)]
+    [InlineData(true,false)]
+    [InlineData(false,true)]
+    [InlineData(false,false)]
+    public void ShouldFailIfNonMinimalLengthIsProvided(bool includeSpecialChars, bool upperCase){
+        Assert.Throws<InvalidDataException>(()=> {
+            Password.ShouldGenerate(7,includeSpecialChars,upperCase);    
+        });
+    }
+    
     [Fact]
     public void ShouldImplicitConvertToString() => Assert.Fail();
 
