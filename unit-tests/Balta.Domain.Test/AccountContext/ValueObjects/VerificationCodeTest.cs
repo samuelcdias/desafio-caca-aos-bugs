@@ -37,7 +37,7 @@ public class VerificationCodeTest
         var validCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
         Assert.True(validCode.ExpiresAtUtc > _now);
     }
-        
+
     [Fact]
     public void ShouldGenerateVerifiedAtAsNull()
     {
@@ -55,8 +55,14 @@ public class VerificationCodeTest
     [Fact]
     public void ShouldFailIfExpired()
     {
+        var expiredDateTimeProvider = new Mock<IDateTimeProvider>();
+        expiredDateTimeProvider.Setup(e => e.UtcNow).Returns(_now.AddMinutes(10)); 
+        
         var expiredCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
-        Assert.Throws<InvalidVerificationCodeException>(()=> expiredCode.ShouldVerify(expiredCode.Code));
+        
+        expiredCode.ShouldVerify(expiredCode.Code);
+
+        Assert.Throws<InvalidVerificationCodeException>(() => expiredCode.ShouldVerify(expiredCode.Code));
     }
 
     [Fact]
@@ -74,54 +80,61 @@ public class VerificationCodeTest
     {
         var validCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
         var invalidCode = validCode.Code.Substring(0, 4);
-        Assert.Throws<InvalidVerificationCodeException>(()=> validCode.ShouldVerify(invalidCode));
+        Assert.Throws<InvalidVerificationCodeException>(() => validCode.ShouldVerify(invalidCode));
 
     }
 
     [Fact]
     public void ShouldFailIfCodeIsGreaterThanSixChars()
     {
-        var valideCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
-        var invalidCode = valideCode.Code + "rs";
+        var validCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
+        var invalidCode = validCode.Code + "rs";
 
-        Assert.Throws<InvalidVerificationCodeException>(() => valideCode.ShouldVerify(invalidCode));
+        Assert.Throws<InvalidVerificationCodeException>(() => validCode.ShouldVerify(invalidCode));
     }
 
     [Fact]
     public void ShouldFailIfIsNotActive()
     {
-
         var validCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
         validCode.ShouldVerify(validCode.Code);
           
         Assert.Throws<InvalidVerificationCodeException>(() => validCode.ShouldVerify(validCode.Code));
     }
+
+
     [Fact]
     public void ShouldFailIfIsAlreadyVerified()
     {
-        var validCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
-        validCode.ShouldVerify(validCode.Code);
+        var verificationCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
+        var code = verificationCode.Code;
 
-        Assert.Throws<InvalidVerificationCodeException>(() => validCode.ShouldVerify(validCode.Code));
+        verificationCode.ShouldVerify(code);
+
+        Assert.Throws<InvalidVerificationCodeException>(() => verificationCode.ShouldVerify(code));
     }
 
     [Fact]
     public void ShouldFailIfIsVerificationCodeDoesNotMatch()
     {
-        var validCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
-        var incorrectCode = "INVALID";
+        var code = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
+        var wrongCode = "WRONG1";
 
-        Assert.Throws<InvalidVerificationCodeException>(() => validCode.ShouldVerify(incorrectCode));
+        Assert.Throws<InvalidVerificationCodeException>(
+            () => code.ShouldVerify(wrongCode)
+        );
     }
 
     [Fact]
     public void ShouldVerify()
     {
-        var validCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
-        validCode.ShouldVerify(validCode.Code);
+        var code = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
+        var codeValue = code.Code;
 
-        Assert.NotNull(validCode.ExpiresAtUtc);
-        Assert.NotNull(validCode.VerifiedAtUtc);
-      
+        code.ShouldVerify(codeValue);
+
+        Assert.NotNull(code.VerifiedAtUtc);
+        Assert.Null(code.ExpiresAtUtc);
+        Assert.True(code.IsActive);
     }
 }
