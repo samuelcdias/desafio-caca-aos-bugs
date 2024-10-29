@@ -93,15 +93,35 @@ public class VerificationCodeTest
 
         var validCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
         validCode.ShouldVerify(validCode.Code);
-
+          
         Assert.Throws<InvalidVerificationCodeException>(() => validCode.ShouldVerify(validCode.Code));
     }
     [Fact]
-    public void ShouldFailIfIsAlreadyVerified() => Assert.Fail();
+    public void ShouldFailIfIsAlreadyVerified()
+    {
+        var validCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
+        validCode.ShouldVerify(validCode.Code);
+
+        Assert.Throws<InvalidVerificationCodeException>(() => validCode.ShouldVerify(validCode.Code));
+    }
 
     [Fact]
-    public void ShouldFailIfIsVerificationCodeDoesNotMatch() => Assert.Fail();
+    public void ShouldFailIfIsVerificationCodeDoesNotMatch()
+    {
+        var validCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
+        var incorrectCode = "INVALID";
+
+        Assert.Throws<InvalidVerificationCodeException>(() => validCode.ShouldVerify(incorrectCode));
+    }
 
     [Fact]
-    public void ShouldVerify() => Assert.Fail();
+    public void ShouldVerify()
+    {
+        var validCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
+        validCode.ShouldVerify(validCode.Code);
+
+        Assert.NotNull(validCode.ExpiresAtUtc);
+        Assert.NotNull(validCode.VerifiedAtUtc);
+      
+    }
 }
