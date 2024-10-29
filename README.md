@@ -22,7 +22,7 @@ Bernardo Meine [github](https://github.com/BernardoMeine)
 
 Edinaelson Santos [github](https://github.com/samuelcdias)
 
-![Hélio Neto](https://avatars.githubusercontent.com/u/41789017?v=4 "Hélio Neto")
+![Hélio Neto](https://avatars.githubusercontent.com/u/99693610?v=4 "Hélio Neto")
 
 Hélio Neto [github](https://github.com/ehlliot8)
 
