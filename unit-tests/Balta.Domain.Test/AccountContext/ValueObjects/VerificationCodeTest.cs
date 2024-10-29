@@ -14,7 +14,7 @@ public class VerificationCodeTest
     {
         _now = DateTime.UtcNow;
         _dateTimeProvider = new Mock<IDateTimeProvider>();
-        _dateTimeProvider.Setup((e) => e.UtcNow).Returns(_now.AddMinutes(-5));
+       
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class VerificationCodeTest
         var expiredDateTimeProvider = new Mock<IDateTimeProvider>();
         expiredDateTimeProvider.Setup(e => e.UtcNow).Returns(_now.AddMinutes(10)); 
         
-        var expiredCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
+        var expiredCode = VerificationCode.ShouldCreate(expiredDateTimeProvider.Object);
         
         expiredCode.ShouldVerify(expiredCode.Code);
 
@@ -98,9 +98,10 @@ public class VerificationCodeTest
     {
         var validCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
         validCode.ShouldVerify(validCode.Code);
-
+          
         Assert.Throws<InvalidVerificationCodeException>(() => validCode.ShouldVerify(validCode.Code));
     }
+
 
     [Fact]
     public void ShouldFailIfIsAlreadyVerified()
@@ -117,10 +118,12 @@ public class VerificationCodeTest
     public void ShouldFailIfIsVerificationCodeDoesNotMatch()
     {
         var code = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
-        var wrongCode = "WRONG1";
+        var otherCode = VerificationCode.ShouldCreate(_dateTimeProvider.Object);
+      
+        
 
         Assert.Throws<InvalidVerificationCodeException>(
-            () => code.ShouldVerify(wrongCode)
+            () => code.ShouldVerify(otherCode.Code)
         );
     }
 
