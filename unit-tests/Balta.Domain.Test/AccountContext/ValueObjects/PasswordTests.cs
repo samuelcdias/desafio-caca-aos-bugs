@@ -2,7 +2,6 @@ using Balta.Domain.AccountContext.ValueObjects;
 using Balta.Domain.AccountContext.ValueObjects.Exceptions;
 using Balta.Domain.SharedContext.Abstractions;
 using Balta.Domain.SharedContext.Extensions;
-using Castle.Components.DictionaryAdapter.Xml;
 
 namespace Balta.Domain.Test.AccountContext.ValueObjects;
 
@@ -109,17 +108,34 @@ public class PasswordTests
     }
     
     [Fact]
-    public void ShouldImplicitConvertToString() => Assert.Fail();
+    public void ShouldImplicitConvertToString()
+    {
+        var passwordAssigned = Password.ShouldCreate("password");
+
+        Assert.IsType<Password>(passwordAssigned);
+        Assert.Equal(passwordAssigned.ToString(), passwordAssigned);
+    }
 
     [Fact]
-    public void ShouldReturnHashAsStringWhenCallToStringMethod() => Assert.Fail();
+    public void ShouldReturnHashAsStringWhenCallToStringMethod()
+    {
+        var passwordAssigned = Password.ShouldCreate("password");
+
+        Assert.Equal(passwordAssigned.Hash, passwordAssigned.ToString());
+        Assert.IsType<string>(passwordAssigned.ToString());
+    }
 
     [Fact]
-    public void ShouldMarkPasswordAsExpired() => Assert.Fail();
+    public void ShouldMarkPasswordAsExpired()
+    {
+        var password = "HelloFriends";
+        var passwordCreated = Password.ShouldCreateWithExpiration(password, DateTime.UtcNow.AddDays(-1));
+        Assert.True(passwordCreated.IsExpired());
+    }
 
     [Fact]
     public void ShouldFailIfPasswordIsExpired(){
-        var password = "HelloFirends";
+        var password = "HelloFriends";
         var passwordCreated = Password.ShouldCreateWithExpiration(password, DateTime.UtcNow.AddDays(-1));
         Assert.Throws<InvalidPasswordException>(()=> Password.ShouldVerify(passwordCreated));
     }

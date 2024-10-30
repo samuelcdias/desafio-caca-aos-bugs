@@ -41,7 +41,7 @@ public class UserTests
     }
 
     [Theory]
-    [InlineData(4)] // Número de tentativas para bloquear o usuário
+    [InlineData(4)] 
     public void ShouldBlockUserIfMultipleFailAttempts(int attempts)
     {
         var email = Email.ShouldCreate(EmailAddress, _dateTimeProvider.Object);
